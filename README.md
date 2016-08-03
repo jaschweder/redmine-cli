@@ -1,15 +1,14 @@
 # Redmine Command Line Tool
 
-# Requisites
-- [php](https://php.net)
+### Requisites
 - [composer](https://getcomposer.org)
 
-# Installing
+### Installing
 ```shell
 composer require global jaschweder/redmine
 ```
 
-# Usage
+### Usage
 Include your ```~/.composer/vendor/bin``` folder to the system PATH
 ```shell
     export REDMINE_HOST=<your_redmine_host>
@@ -22,7 +21,7 @@ Include your ```~/.composer/vendor/bin``` folder to the system PATH
     redmine open <issue_id> #open the issue in your default browser
 ```
 
-# TODO
+### TODO
  - create issues
  - change issues status
  - transfer issues to another user
