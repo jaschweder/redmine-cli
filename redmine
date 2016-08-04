@@ -60,16 +60,20 @@ function help()
 
     REDMINE COMMAND LINE TOOL
 
+    usage:
+        redmine <command>
+
     enviorment:
         REDMINE_USERNAME Username for login
         REDMINE_PASSWORD Password for login
         REDMINE_HOST     Host of redmine server
 
     commands:
-        help        Print this help message
-        show        Show information about a issue
-        open        Open the issue in default browser
-        list        Print this help message
+        help                Print this help message
+        list                Print list of issues
+        show <issue>        Show information about a issue
+        open <issue>        Open the issue in default browser
+
 HELP;
     echo "\n";
 }
@@ -90,6 +94,11 @@ function blank($text, $number)
 function arg($arg)
 {
     global $argv;
+
+    if (is_int($arg)) {
+        return $argv[$arg];
+    }
+
     if (!in_array($arg, $argv)) {
         return null;
     }
@@ -106,8 +115,12 @@ function arg($arg)
  * Handler
  */
 
-if ($argc == 1 || in_array('list', $argv)) {
+if (in_array('list', $argv) || in_array('issues', $argv)) {
     return listIssues();
+}
+
+if ($argc == 2 && is_numeric(arg(1))) {
+    return show(arg(1));
 }
 
 if ($issue = arg('show')) {
@@ -118,7 +131,7 @@ if ($issue = arg('open')) {
     return open($issue);
 }
 
-if (in_array('--help', $argv) || in_array('-h', $argv) || in_array('help', $argv)) {
+if ($argc == 1 || in_array('--help', $argv) || in_array('-h', $argv) || in_array('help', $argv)) {
     return help();
 }
 
