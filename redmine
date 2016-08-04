@@ -70,6 +70,7 @@ function help()
 
     Usage:
         --help, -h    Print this help message
+        show          Show information about a issue
 HELP;
 }
 
@@ -94,7 +95,7 @@ if ($argc == 1) {
     list_issues();
 }
 
-if (in_array('show', $argv) || in_array('s', $argv)) {
+if (in_array('show', $argv)) {
     $index = array_search('show', $argv) + 1;
     if (array_key_exists($index, $argv)) {
         return show($argv[$index]);
@@ -104,7 +105,7 @@ if (in_array('show', $argv) || in_array('s', $argv)) {
     exit(1);
 }
 
-if (in_array('open', $argv) || in_array('o', $arg)) {
+if (in_array('open', $argv)) {
     $index = array_search('open', $argv) + 1;
     if (array_key_exists($index, $argv)) {
         return open($argv[$index]);
