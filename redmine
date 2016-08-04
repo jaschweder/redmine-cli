@@ -85,6 +85,21 @@ function doing($issue)
     return show($issue);
 }
 
+function close($issue)
+{
+    $data = [
+        'status_id' => 5
+    ];
+
+    if (!empty($comment)) {
+        $data['notes'] = $comment;
+    }
+
+    client()->issue->update($issue, $data);
+
+    return show($issue);
+}
+
 function open($issue)
 {
     $command = 'x-www-browser '.getenv('REDMINE_HOST').'/issues/'.$issue;
@@ -177,9 +192,19 @@ if (in_array('resolve', $argv)) {
     return resolve($issue, $comment);
 }
 
+
 if (in_array('doing', $argv)) {
     $issue = arg(2);
     return doing($issue);
+}
+
+if (in_array('close', $argv)) {
+    $issue = arg(2);
+    $comment = '';
+    if ($argc == 4) {
+        $comment = arg(3);
+    }
+    return close($issue, $comment);
 }
 
 if (in_array('--help', $argv) || in_array('-h', $argv) || in_array('help', $argv)) {
