@@ -38,8 +38,8 @@ function show($issue)
     ."\n".' Tracker: '.$response['issue']['tracker']['name']
     ."\n".'  Status: '.$response['issue']['status']['name']
     ."\n".'Priority: '.$response['issue']['priority']['name']
-    ."\n".'  Author: '.$response['issue']['author']['name']
-    ."\n".'Assigned: '.$response['issue']['assigned_to']['name']
+    ."\n".'  Author: '.$response['issue']['author']['name'] . '(' . $response['issue']['author']['id'] . ')'
+    ."\n".'Assigned: '.$response['issue']['assigned_to']['name'] . '(' . $response['issue']['assigned_to']['id'] . ')'
     ."\n".'    Date: '.(new Carbon\Carbon($response['issue']['created_on']))->format('d/m/Y')
     ."\n".'    Time: '.(new Carbon\Carbon($response['issue']['created_on']))->format('H:i:s')
     ."\n".' Subject: '.$response['issue']['subject']
@@ -58,19 +58,20 @@ function help()
 {
     echo <<<HELP
 
-    ===========================================
-               REDMINE CLIENT HELPER
-    ===========================================
+    REDMINE COMMAND LINE TOOL
 
-    Enviorment:
+    enviorment:
         REDMINE_USERNAME Username for login
         REDMINE_PASSWORD Password for login
         REDMINE_HOST     Host of redmine server
 
-    Usage:
-        --help, -h    Print this help message
-        show          Show information about a issue
+    commands:
+        help        Print this help message
+        show        Show information about a issue
+        open        Open the issue in default browser
+        list        Print this help message
 HELP;
+    echo "\n";
 }
 
 /**
@@ -90,21 +91,23 @@ function arg($arg)
 {
     global $argv;
     if (!in_array($arg, $argv)) {
-        return;
+        return null;
     }
 
     $index = array_search($arg, $argv);
     if (array_key_exists($index + 1, $argv)) {
         return $argv[$index + 1];
     }
+
+    return true;
 }
 
 /*
  * Handler
  */
 
-if ($argc == 1) {
-    listIssues();
+if ($argc == 1 || in_array('list', $argv)) {
+    return listIssues();
 }
 
 if ($issue = arg('show')) {
@@ -115,6 +118,9 @@ if ($issue = arg('open')) {
     return open($issue);
 }
 
-if (in_array('--help', $argv) || in_array('-h', $argv)) {
+if (in_array('--help', $argv) || in_array('-h', $argv) || in_array('help', $argv)) {
     return help();
 }
+
+echo "Error: command not found, see 'help' for more info. \n";
+exit(1);
