@@ -1,17 +1,16 @@
 #!/usr/bin/env php
 <?php
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__.'/vendor/autoload.php';
 
 /**
- * Commands
+ * Commands.
  */
-
 function list_issues()
 {
     $response = client()->issue->all([
-        'assigned_to_id'=>'me',
-        'limit' => 30
+        'assigned_to_id' => 'me',
+        'limit' => 30,
     ]);
 
     $issues = collect($response['issues'])
@@ -19,14 +18,14 @@ function list_issues()
 
     $issues->map(function ($issue) {
         echo "\n"
-            . '    #' . blank($issue['id'], 10)
-            . blank($issue['project']['name'], 18)
-            . blank($issue['status']['name'], 15)
-            . blank($issue['priority']['name'], 10)
-            . blank($issue['author']['name'], 24)
-            . blank($issue['assigned_to']['name'], 22)
-            . blank(substr($issue['created_on'], 0, 10), 12)
-            . substr($issue['subject'], 0, 100);
+            .'    #'.blank($issue['id'], 10)
+            .blank($issue['project']['name'], 18)
+            .blank($issue['status']['name'], 15)
+            .blank($issue['priority']['name'], 10)
+            .blank($issue['author']['name'], 24)
+            .blank($issue['assigned_to']['name'], 22)
+            .blank(substr($issue['created_on'], 0, 10), 12)
+            .substr($issue['subject'], 0, 100);
     });
 }
 
@@ -34,24 +33,24 @@ function show($issue)
 {
     $response = client()->issue->show($issue);
     echo "\n"
-    . '   Issue: ' . $issue
-    . "\n" . ' Project: ' . $response['issue']['project']['name']
-    . "\n" . ' Tracker: ' . $response['issue']['tracker']['name']
-    . "\n" . '  Status: ' . $response['issue']['status']['name']
-    . "\n" . 'Priority: ' . $response['issue']['priority']['name']
-    . "\n" . '  Author: ' . $response['issue']['author']['name']
-    . "\n" . 'Assigned: ' . $response['issue']['assigned_to']['name']
-    . "\n" . '    Date: ' . (new Carbon\Carbon($response['issue']['created_on']))->format('d/m/Y')
-    . "\n" . '    Time: ' . (new Carbon\Carbon($response['issue']['created_on']))->format('H:i:s')
-    . "\n" . ' Subject: ' . $response['issue']['subject']
-    . "\n"
-    . "\n" . ' ' . $response['issue']['description']
-    . "\n";
+    .'   Issue: '.$issue
+    ."\n".' Project: '.$response['issue']['project']['name']
+    ."\n".' Tracker: '.$response['issue']['tracker']['name']
+    ."\n".'  Status: '.$response['issue']['status']['name']
+    ."\n".'Priority: '.$response['issue']['priority']['name']
+    ."\n".'  Author: '.$response['issue']['author']['name']
+    ."\n".'Assigned: '.$response['issue']['assigned_to']['name']
+    ."\n".'    Date: '.(new Carbon\Carbon($response['issue']['created_on']))->format('d/m/Y')
+    ."\n".'    Time: '.(new Carbon\Carbon($response['issue']['created_on']))->format('H:i:s')
+    ."\n".' Subject: '.$response['issue']['subject']
+    ."\n"
+    ."\n".' '.$response['issue']['description']
+    ."\n";
 }
 
 function open($issue)
 {
-    $command = 'x-www-browser ' . getenv('REDMINE_HOST') . '/issues/' . $issue;
+    $command = 'x-www-browser '.getenv('REDMINE_HOST').'/issues/'.$issue;
     shell_exec($command);
 }
 
@@ -75,7 +74,7 @@ HELP;
 }
 
 /**
- * Help functions
+ * Help functions.
  */
 function client()
 {
@@ -84,10 +83,23 @@ function client()
 
 function blank($text, $number)
 {
-    return $text . str_repeat(' ', ($number - strlen($text)));
+    return $text.str_repeat(' ', ($number - strlen($text)));
 }
 
-/**
+function arg($arg)
+{
+    global $argv;
+    if (!in_array($arg, $argv)) {
+        return;
+    }
+
+    $index = array_search($arg, $argv);
+    if (array_key_exists($index + 1, $argv)) {
+        return $argv[$index + 1];
+    }
+}
+
+/*
  * Handler
  */
 
@@ -95,23 +107,21 @@ if ($argc == 1) {
     list_issues();
 }
 
-if (in_array('show', $argv)) {
-    $index = array_search('show', $argv) + 1;
-    if (array_key_exists($index, $argv)) {
-        return show($argv[$index]);
+if ($issue = arg('show')) {
+    if ($issue) {
+        return show($issue);
     }
 
-    echo ('Invalid issue id, Usage: "redmine show 123"');
+    echo 'Invalid issue id, Usage: "redmine show 123"';
     exit(1);
 }
 
-if (in_array('open', $argv)) {
-    $index = array_search('open', $argv) + 1;
-    if (array_key_exists($index, $argv)) {
-        return open($argv[$index]);
+if ($issue = arg('open')) {
+    if ($issue) {
+        return open($issue);
     }
 
-    echo ('Invalid issue id, Usage: "redmine open 123"');
+    echo 'Invalid issue id, Usage: "redmine open 123"';
     exit(1);
 }
 
