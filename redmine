@@ -6,7 +6,7 @@ require __DIR__.'/vendor/autoload.php';
 /**
  * Commands.
  */
-function list_issues()
+function listIssues()
 {
     $response = client()->issue->all([
         'assigned_to_id' => 'me',
@@ -104,7 +104,7 @@ function arg($arg)
  */
 
 if ($argc == 1) {
-    list_issues();
+    listIssues();
 }
 
 if ($issue = arg('show')) {
