@@ -41,7 +41,8 @@ function show($issue)
     . "\n" . 'Priority: ' . $response['issue']['priority']['name']
     . "\n" . '  Author: ' . $response['issue']['author']['name']
     . "\n" . 'Assigned: ' . $response['issue']['assigned_to']['name']
-    . "\n" . '    Date: ' . $response['issue']['start_date']
+    . "\n" . '    Date: ' . (new Carbon\Carbon($response['issue']['created_on']))->format('d/m/Y')
+    . "\n" . '    Time: ' . (new Carbon\Carbon($response['issue']['created_on']))->format('H:i:s')
     . "\n" . ' Subject: ' . $response['issue']['subject']
     . "\n"
     . "\n" . ' ' . $response['issue']['description']
@@ -93,7 +94,7 @@ if ($argc == 1) {
     list_issues();
 }
 
-if (in_array('show', $argv)) {
+if (in_array('show', $argv) || in_array('s', $argv)) {
     $index = array_search('show', $argv) + 1;
     if (array_key_exists($index, $argv)) {
         return show($argv[$index]);
@@ -103,7 +104,7 @@ if (in_array('show', $argv)) {
     exit(1);
 }
 
-if (in_array('open', $argv)) {
+if (in_array('open', $argv) || in_array('o', $arg)) {
     $index = array_search('open', $argv) + 1;
     if (array_key_exists($index, $argv)) {
         return open($argv[$index]);
