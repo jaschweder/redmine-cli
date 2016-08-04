@@ -108,21 +108,11 @@ if ($argc == 1) {
 }
 
 if ($issue = arg('show')) {
-    if ($issue) {
-        return show($issue);
-    }
-
-    echo 'Invalid issue id, Usage: "redmine show 123"';
-    exit(1);
+    return show($issue);
 }
 
 if ($issue = arg('open')) {
-    if ($issue) {
-        return open($issue);
-    }
-
-    echo 'Invalid issue id, Usage: "redmine open 123"';
-    exit(1);
+    return open($issue);
 }
 
 if (in_array('--help', $argv) || in_array('-h', $argv)) {
