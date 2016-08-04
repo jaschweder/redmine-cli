@@ -48,6 +48,43 @@ function show($issue)
     ."\n";
 }
 
+function resolve($issue, $comment = '')
+{
+    $response = client()->issue->show($issue);
+    $user = $response['issue']['author']['id'];
+
+    $data = [
+        'assigned_to_id' => $user,
+        'status_id'      => 3
+    ];
+
+    if (!empty($comment)) {
+        $data['notes'] = $comment;
+    }
+
+    client()->issue->update($issue, $data);
+
+    return show($issue);
+}
+
+function doing($issue)
+{
+    $currentUserId = client()->user->getCurrentUser()['user']['id'];
+
+    $data = [
+        'assigned_to_id' => $currentUserId,
+        'status_id'      => 2
+    ];
+
+    if (!empty($comment)) {
+        $data['notes'] = $comment;
+    }
+
+    client()->issue->update($issue, $data);
+
+    return show($issue);
+}
+
 function open($issue)
 {
     $command = 'x-www-browser '.getenv('REDMINE_HOST').'/issues/'.$issue;
@@ -133,23 +170,16 @@ if ($issue = arg('open')) {
 
 if (in_array('resolve', $argv)) {
     $issue = arg(2);
-    $note = arg(3);
-
-    $response = client()->issue->show($issue);
-    $user = $response['issue']['author']['id'];
-
-    $data = [
-        'assigned_to_id' => $user,
-        'status_id'      => 3
-    ];
-
-    if (!empty($note)) {
-        $data['notes'] = $note;
+    $comment = '';
+    if ($argc == 4) {
+        $comment = arg(3);
     }
+    return resolve($issue, $comment);
+}
 
-    $response = client()->issue->update($issue, $data);
-
-    return show($issue);
+if (in_array('doing', $argv)) {
+    $issue = arg(2);
+    return doing($issue);
 }
 
 if (in_array('--help', $argv) || in_array('-h', $argv) || in_array('help', $argv)) {
