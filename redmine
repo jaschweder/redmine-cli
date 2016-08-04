@@ -115,7 +115,7 @@ function arg($arg)
  * Handler
  */
 
-if (in_array('list', $argv) || in_array('issues', $argv)) {
+if ($argc == 1 || in_array('list', $argv) || in_array('issues', $argv)) {
     return listIssues();
 }
 
@@ -131,9 +131,30 @@ if ($issue = arg('open')) {
     return open($issue);
 }
 
-if ($argc == 1 || in_array('--help', $argv) || in_array('-h', $argv) || in_array('help', $argv)) {
+if (in_array('resolve', $argv)) {
+    $issue = arg(2);
+    $note = arg(3);
+
+    $response = client()->issue->show($issue);
+    $user = $response['issue']['author']['id'];
+
+    $data = [
+        'assigned_to_id' => $user,
+        'status_id'      => 3
+    ];
+
+    if (!empty($note)) {
+        $data['notes'] = $note;
+    }
+
+    $response = client()->issue->update($issue, $data);
+
+    return show($issue);
+}
+
+if (in_array('--help', $argv) || in_array('-h', $argv) || in_array('help', $argv)) {
     return help();
 }
 
-echo "Error: command not found, see 'help' for more info. \n";
+echo "Error: command not found or was passsed invalid params, see 'help' for more info. \n";
 exit(1);
