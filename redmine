@@ -8,9 +8,13 @@ require __DIR__.'/vendor/autoload.php';
  */
 function listIssues()
 {
+    $limit = getenv('REDMINE_ISSUES_LIMIT');
+    if (!is_numeric($limit)) {
+      $limit = 15;
+    }
     $response = client()->issue->all([
         'assigned_to_id' => 'me',
-        'limit' => 30,
+        'limit' => $limit,
     ]);
 
     $issues = collect($response['issues'])
@@ -129,9 +133,10 @@ function help()
         redmine <command>
 
     enviorment:
-        REDMINE_USERNAME Username for login
-        REDMINE_PASSWORD Password for login
-        REDMINE_HOST     Host of redmine server
+        REDMINE_ISSUES_LIMIT Ensure limit of issues printed (default: 15)
+        REDMINE_USERNAME     Username for login
+        REDMINE_PASSWORD     Password for login
+        REDMINE_HOST         Host of redmine server
 
     commands:
         help                Print this help message
