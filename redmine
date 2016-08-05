@@ -16,9 +16,22 @@ function listIssues()
     $issues = collect($response['issues'])
         ->sortBy('project');
 
+
+    echo "\n"
+        .blank('Issue', 10)
+        .blank('Project', 18)
+        .blank('Status', 15)
+        .blank('Priority', 10)
+        .blank('Author', 24)
+        .blank('Assigned To', 22)
+        .blank('Created At', 12)
+        .substr('Subject', 0, 100);
+
+    echo "\n" . str_repeat('=', 211);
+
     $issues->map(function ($issue) {
         echo "\n"
-            .'    #'.blank($issue['id'], 10)
+            .blank($issue['id'], 10)
             .blank($issue['project']['name'], 18)
             .blank($issue['status']['name'], 15)
             .blank($issue['priority']['name'], 10)
